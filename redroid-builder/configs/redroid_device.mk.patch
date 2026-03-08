@@ -1,0 +1,35 @@
+# Patch instructions for device/redroid/redroid/device.mk
+#
+# This file documents the changes made by 03-apply-customizations.sh.
+# It is NOT applied as a git patch — the script appends these blocks directly.
+# This file exists for documentation and manual reference only.
+#
+# The following blocks are appended to device.mk:
+
+# ─── MindTheGapps ───
+# $(call inherit-product-if-exists, vendor/gapps/x86_64/x86_64-vendor.mk)
+
+# ─── libndk_translation (ARM → x86) ───
+# $(call inherit-product-if-exists, vendor/google/chromeos-x86/ndk_translation.mk)
+
+# ─── Mihomo Proxy ───
+# PRODUCT_PACKAGES += \
+#     mihomo \
+#     mihomo.rc \
+#     mihomo_config
+
+# ─── Pre-installed Apps ───
+# PRODUCT_PACKAGES += \
+#     WhatsApp \
+#     TikTok
+
+# ─── Device Spoofing (Pixel 7) ───
+# PRODUCT_PROPERTY_OVERRIDES += \
+#     ro.build.fingerprint=google/panther/panther:14/AP2A.240805.005/12025142:user/release-keys \
+#     ro.product.brand=google \
+#     ro.product.device=panther \
+#     ...
+
+# ─── Redroid Default Display Settings ───
+# PRODUCT_PROPERTY_OVERRIDES += \
+#     ro.sf.lcd_density=320

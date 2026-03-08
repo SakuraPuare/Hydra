@@ -1,0 +1,1 @@
+apks/*.xapk filter=lfs diff=lfs merge=lfs -text

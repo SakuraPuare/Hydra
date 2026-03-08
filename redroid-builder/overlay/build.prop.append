@@ -1,0 +1,22 @@
+# ─── libndk_translation ───
+ro.product.cpu.abilist=x86_64,arm64-v8a,x86,armeabi-v7a,armeabi
+ro.product.cpu.abilist64=x86_64,arm64-v8a
+ro.product.cpu.abilist32=x86,armeabi-v7a,armeabi
+ro.dalvik.vm.isa.arm=x86
+ro.dalvik.vm.isa.arm64=x86_64
+ro.enable.native.bridge.exec=1
+ro.dalvik.vm.native.bridge=libndk_translation.so
+
+# ─── Device Spoofing (Pixel 7 / panther) ───
+ro.build.fingerprint=google/panther/panther:14/AP2A.240805.005/12025142:user/release-keys
+ro.product.brand=google
+ro.product.device=panther
+ro.product.manufacturer=Google
+ro.product.model=Pixel 7
+ro.product.name=panther
+ro.build.display.id=AP2A.240805.005
+ro.build.product=panther
+ro.build.description=panther-user 14 AP2A.240805.005 12025142 release-keys
+ro.build.version.security_patch=2024-08-05
+ro.boot.hardware.sku=G03Z5
+persist.sys.timezone=America/New_York

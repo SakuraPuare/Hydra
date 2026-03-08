@@ -1,0 +1,16 @@
+service mihomo /system/bin/mihomo -d /data/mihomo
+    class main
+    user root
+    group root net_admin net_raw inet
+    seclabel u:r:su:s0
+    disabled
+    oneshot
+
+on property:sys.boot_completed=1
+    mkdir /data/mihomo 0755 root root
+    # Only start if config exists (pushed externally via ADB)
+    exec -- /system/bin/sh -c "[ -f /data/mihomo/config.yaml ] && setprop ctl.start mihomo"
+
+on property:mihomo.restart=1
+    restart mihomo
+    setprop mihomo.restart 0

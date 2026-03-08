@@ -1,0 +1,32 @@
+# Mihomo default configuration
+# This is a minimal config. The real config is pushed via ADB by the Hydra backend.
+# Config location: /data/mihomo/config.yaml
+
+mixed-port: 7890
+socks-port: 7891
+redir-port: 7892
+tproxy-port: 7893
+
+allow-lan: false
+bind-address: '127.0.0.1'
+mode: rule
+log-level: warning
+
+dns:
+  enable: true
+  listen: '127.0.0.1:5353'
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - 8.8.8.8
+    - 1.1.1.1
+
+tun:
+  enable: false
+
+proxies: []
+
+proxy-groups: []
+
+rules:
+  - MATCH,DIRECT

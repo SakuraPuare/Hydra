@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MindTheGapps manifest for Android 14 (x86_64)
+  Place in .repo/local_manifests/ before repo sync
+-->
+<manifest>
+  <remote name="nickel"
+          fetch="https://gitlab.com/nickel-corp" />
+
+  <project path="vendor/gapps"
+           name="nickel-nickel/nickel_gapps"
+           remote="nickel"
+           revision="14" />
+</manifest>
