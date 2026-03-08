@@ -5,7 +5,7 @@ set -euo pipefail
 
 ANDROID_BRANCH="${ANDROID_BRANCH:-android-14.0.0_r1}"
 REDROID_BRANCH="${REDROID_BRANCH:-14.0.0}"
-SRC_DIR="/src"
+SRC_DIR="${SRC_DIR:-$HOME/redroid-src}"
 
 # ─── Mirror configuration ───────────────────────────────────────
 # AOSP_MIRROR: sustech (南科大), tuna (清华), ustc (中科大), custom URL
@@ -74,13 +74,16 @@ else
 fi
 
 # Sync source
-echo "[3/3] Syncing source tree (this will take a long time)..."
+# Limit parallel jobs to avoid overwhelming IO/network
+SYNC_JOBS="${SYNC_JOBS:-8}"
+echo "[3/3] Syncing source tree (-j${SYNC_JOBS}, this will take a long time)..."
 repo sync -c \
-    -j"$(nproc)" \
+    -j"$SYNC_JOBS" \
     --no-tags \
     --no-clone-bundle \
     --optimized-fetch \
-    --force-sync
+    --force-sync \
+    --verbose
 
 echo ""
 echo "✓ Source sync complete"

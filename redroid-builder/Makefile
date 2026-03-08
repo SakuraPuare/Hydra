@@ -52,21 +52,11 @@ setup: ## Build the AOSP builder Docker image
 
 sync: ## Download AOSP source + Redroid patches (~100GB, takes hours)
 	@mkdir -p $(SRC_DIR)
-	docker run --rm \
-		-v $(SRC_DIR):/src \
-		-v $(SCRIPT_DIR):/scripts:ro \
-		-v $(MANIFEST_DIR):/manifests:ro \
-		$(BUILDER_IMAGE) \
-		bash /scripts/01-sync-source.sh
+	SRC_DIR=$(SRC_DIR) bash $(SCRIPT_DIR)/01-sync-source.sh
 	@echo "✓ Source sync complete"
 
 gapps: ## Set up MindTheGapps integration
-	docker run --rm \
-		-v $(SRC_DIR):/src \
-		-v $(SCRIPT_DIR):/scripts:ro \
-		-v $(MANIFEST_DIR):/manifests:ro \
-		$(BUILDER_IMAGE) \
-		bash /scripts/02-setup-gapps.sh
+	SRC_DIR=$(SRC_DIR) bash $(SCRIPT_DIR)/02-setup-gapps.sh
 	@echo "✓ GApps configured"
 
 customize: ## Apply customizations (libndk, mihomo, apps, props)

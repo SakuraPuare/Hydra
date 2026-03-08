@@ -2,7 +2,8 @@
 # 02-setup-gapps.sh — Configure MindTheGapps integration
 set -euo pipefail
 
-SRC_DIR="/src"
+SRC_DIR="${SRC_DIR:-$HOME/redroid-src}"
+MANIFEST_DIR="${MANIFEST_DIR:-$(cd "$(dirname "$0")/../manifests" && pwd)}"
 
 cd "$SRC_DIR"
 
@@ -12,7 +13,7 @@ echo "════════════════════════�
 
 # Copy MindTheGapps manifest to local_manifests
 echo "[1/3] Adding MindTheGapps manifest..."
-cp /manifests/mindthegapps.xml .repo/local_manifests/mindthegapps.xml
+cp "$MANIFEST_DIR/mindthegapps.xml" .repo/local_manifests/mindthegapps.xml
 
 # Sync to fetch MindTheGapps vendor
 echo "[2/3] Syncing MindTheGapps vendor..."
