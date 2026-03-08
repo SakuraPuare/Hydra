@@ -47,5 +47,6 @@ cat <<EOF
       ro.dalvik.vm.isa.arm64=x86_64 \\
       ro.enable.native.bridge.exec=1 \\
       ro.dalvik.vm.native.bridge=libndk_translation.so \\
-      ro.ndk_translation.version=0.2.3
+      ro.ndk_translation.version=0.2.3 \\
+      ro.setupwizard.mode=DISABLED
 EOF

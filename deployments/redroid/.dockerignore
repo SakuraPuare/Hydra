@@ -1,0 +1,8 @@
+*.zip
+*.gz
+*.md5sum
+*.xapk
+download.sh
+build.sh
+docker-compose.yml
+.dockerignore
