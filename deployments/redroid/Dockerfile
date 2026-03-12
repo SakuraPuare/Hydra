@@ -20,5 +20,6 @@ COPY --chmod=644 mihomo-config.yaml /system/etc/mihomo/config.yaml
 # ============================================
 # 4. 预装应用 (split APK — 所有 .apk 放同一目录)
 # ============================================
-COPY WhatsApp/ /system/app/WhatsApp/
-COPY TikTok/ /system/app/TikTok/
+COPY --chmod=755 Via/ /system/app/Via/
+COPY --chmod=755 WhatsApp/ /system/app/WhatsApp/
+COPY --chmod=755 WhatsAppBusiness/ /system/app/WhatsAppBusiness/

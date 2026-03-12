@@ -9,7 +9,7 @@ IMAGE_TAG="14.0.0-hydra"
 
 # Check prerequisites
 MISSING=0
-for f in gapps/system ndk_translation.tar mihomo mihomo.rc mihomo-config.yaml WhatsApp/WhatsApp.apk TikTok/TikTok.apk; do
+for f in gapps/system ndk_translation.tar mihomo mihomo.rc mihomo-config.yaml Via/Via.apk WhatsApp/WhatsApp.apk WhatsAppBusiness/WhatsAppBusiness.apk; do
     if [ ! -e "$f" ]; then
         echo "ERROR: Missing required file: $f"
         MISSING=1
