@@ -46,31 +46,10 @@ else
 fi
 
 # ============================================
-# 2. libndk_translation (ARM -> x86 translation)
+# 2. Mihomo (android-amd64)
 # ============================================
-# 14.0.0 is a symlink to 13.0.0 which links to 12.0.0 (same binary)
-NDK_URL="https://raw.githubusercontent.com/zhouziyang/libndk_translation/master/libndk_translation-12.0.0.tar"
-
-if [ ! -f "ndk_translation.tar" ]; then
-    echo "==> Downloading libndk_translation..."
-    curl -L -o ndk_translation.tar "$NDK_URL"
-
-    # Verify it's a valid tar
-    if ! tar tf ndk_translation.tar > /dev/null 2>&1; then
-        echo "ERROR: Downloaded ndk_translation.tar is not a valid tar archive"
-        rm -f ndk_translation.tar
-        exit 1
-    fi
-    echo "==> libndk_translation downloaded."
-else
-    echo "==> libndk_translation already downloaded, skipping."
-fi
-
-# ============================================
-# 3. Mihomo (linux-amd64)
-# ============================================
-MIHOMO_VERSION="v1.19.20"
-MIHOMO_URL="https://github.com/MetaCubeX/mihomo/releases/download/${MIHOMO_VERSION}/mihomo-linux-amd64-${MIHOMO_VERSION}.gz"
+MIHOMO_VERSION="v1.19.21"
+MIHOMO_URL="https://github.com/MetaCubeX/mihomo/releases/download/${MIHOMO_VERSION}/mihomo-android-amd64-${MIHOMO_VERSION}.gz"
 
 if [ ! -f "mihomo" ]; then
     echo "==> Downloading Mihomo ${MIHOMO_VERSION}..."
@@ -85,54 +64,60 @@ else
 fi
 
 # ============================================
-# 4. APKs from XAPK (WhatsApp & TikTok)
+# 3. APKs (WhatsApp)
 # ============================================
 # XAPK files are stored in Git LFS at apks/ (project root).
 # They contain split APKs (base + config splits) in ZIP format.
 APKS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)/apks"
 
-extract_xapk() {
+prepare_app_pkg() {
     local APP_NAME="$1"
     local PACKAGE_NAME="$2"
-    local XAPK_GLOB="$3"
+    local FILE_GLOB="$3"
     local TARGET_DIR="$SCRIPT_DIR/$APP_NAME"
 
     if [ -d "$TARGET_DIR" ] && [ -n "$(ls "$TARGET_DIR"/*.apk 2>/dev/null)" ]; then
-        echo "==> $APP_NAME already extracted, skipping."
+        echo "==> $APP_NAME already exists, skipping."
         return 0
     fi
 
-    local XAPK_FILE
-    XAPK_FILE=$(ls "$APKS_DIR"/${XAPK_GLOB} 2>/dev/null | head -1)
+    local SRC_FILE
+    SRC_FILE=$(ls "$APKS_DIR"/${FILE_GLOB} 2>/dev/null | head -1)
 
-    if [ -z "$XAPK_FILE" ]; then
+    if [ -z "$SRC_FILE" ]; then
         echo ""
-        echo "WARNING: No XAPK matching '${XAPK_GLOB}' found in $APKS_DIR/"
+        echo "WARNING: No file matching '${FILE_GLOB}' found in $APKS_DIR/"
         echo "  $APP_NAME will NOT be pre-installed."
-        echo "  Download the XAPK from APKPure and place it in $APKS_DIR/"
+        echo "  Download the APK from APKPure and place it in $APKS_DIR/"
         echo ""
         return 1
     fi
 
-    echo "==> Extracting $APP_NAME from $(basename "$XAPK_FILE")..."
+    local EXTENSION="${SRC_FILE##*.}"
+
+    echo "==> Processing $APP_NAME from $(basename "$SRC_FILE") ($EXTENSION)..."
     rm -rf "$TARGET_DIR"
     mkdir -p "$TARGET_DIR"
 
-    # Extract only .apk files from the XAPK (which is a ZIP)
-    unzip -q -o "$XAPK_FILE" '*.apk' -d "$TARGET_DIR/"
-
-    # Rename base APK to match Android convention: AppName/AppName.apk
-    if [ -f "$TARGET_DIR/${PACKAGE_NAME}.apk" ]; then
-        mv "$TARGET_DIR/${PACKAGE_NAME}.apk" "$TARGET_DIR/${APP_NAME}.apk"
+    if [ "$EXTENSION" = "xapk" ]; then
+        unzip -q -o "$SRC_FILE" '*.apk' -d "$TARGET_DIR/"
+        if [ -f "$TARGET_DIR/${PACKAGE_NAME}.apk" ]; then
+            mv "$TARGET_DIR/${PACKAGE_NAME}.apk" "$TARGET_DIR/${APP_NAME}.apk"
+        fi
+        echo "==> $APP_NAME: extracted from XAPK."
+    else
+        cp "$SRC_FILE" "$TARGET_DIR/${APP_NAME}.apk"
+        echo "==> $APP_NAME: copied plain APK."
     fi
 
     local COUNT
     COUNT=$(find "$TARGET_DIR" -name '*.apk' | wc -l)
-    echo "==> $APP_NAME: extracted $COUNT split APK(s)"
+    echo "==> $APP_NAME: $COUNT APK file(s) ready in $APP_NAME/"
 }
 
-extract_xapk "WhatsApp" "com.whatsapp" "WhatsApp*.xapk"
-extract_xapk "TikTok" "com.zhiliaoapp.musically" "TikTok*.xapk"
+prepare_app_pkg "Via" "mark.via" "Via*.apk"
+prepare_app_pkg "WhatsApp" "com.whatsapp" "WhatsApp*.apk"
+prepare_app_pkg "WhatsAppBusiness" "com.whatsapp.w4b" "WhatsAppBusiness*.xapk"
 
 # ============================================
 # Summary
@@ -140,22 +125,22 @@ extract_xapk "TikTok" "com.zhiliaoapp.musically" "TikTok*.xapk"
 echo ""
 echo "==> Download summary:"
 echo "    MindTheGapps:       $([ -d gapps/system ] && echo 'OK' || echo 'MISSING')"
-echo "    libndk_translation: $([ -f ndk_translation.tar ] && echo 'OK' || echo 'MISSING')"
 echo "    Mihomo:             $([ -f mihomo ] && echo 'OK' || echo 'MISSING')"
-echo "    WhatsApp:           $([ -d WhatsApp ] && [ -n "$(ls WhatsApp/*.apk 2>/dev/null)" ] && echo "OK ($(ls WhatsApp/*.apk | wc -l) splits)" || echo 'MISSING')"
-echo "    TikTok:             $([ -d TikTok ] && [ -n "$(ls TikTok/*.apk 2>/dev/null)" ] && echo "OK ($(ls TikTok/*.apk | wc -l) splits)" || echo 'MISSING')"
+echo "    Via:                $([ -d Via ] && [ -n "$(ls Via/*.apk 2>/dev/null)" ] && echo 'OK' || echo 'MISSING')"
+echo "    WhatsApp:           $([ -d WhatsApp ] && [ -n "$(ls WhatsApp/*.apk 2>/dev/null)" ] && echo 'OK' || echo 'MISSING')"
+echo "    WhatsAppBusiness:   $([ -d WhatsAppBusiness ] && [ -n "$(ls WhatsAppBusiness/*.apk 2>/dev/null)" ] && echo "OK ($(ls WhatsAppBusiness/*.apk | wc -l) splits)" || echo 'MISSING')"
 echo ""
 
 MISSING=0
 [ ! -d "gapps/system" ] && MISSING=1
-[ ! -f "ndk_translation.tar" ] && MISSING=1
 [ ! -f "mihomo" ] && MISSING=1
 
-WA_OK=0; TT_OK=0
+VIA_OK=0; WA_OK=0; WAB_OK=0
+[ -d "Via" ] && [ -n "$(ls Via/*.apk 2>/dev/null)" ] && VIA_OK=1
 [ -d "WhatsApp" ] && [ -n "$(ls WhatsApp/*.apk 2>/dev/null)" ] && WA_OK=1
-[ -d "TikTok" ] && [ -n "$(ls TikTok/*.apk 2>/dev/null)" ] && TT_OK=1
+[ -d "WhatsAppBusiness" ] && [ -n "$(ls WhatsAppBusiness/*.apk 2>/dev/null)" ] && WAB_OK=1
 
-if [ $MISSING -eq 0 ] && [ $WA_OK -eq 1 ] && [ $TT_OK -eq 1 ]; then
+if [ $MISSING -eq 0 ] && [ $VIA_OK -eq 1 ] && [ $WA_OK -eq 1 ] && [ $WAB_OK -eq 1 ]; then
     echo "==> All dependencies ready. Run: bash build.sh"
 elif [ $MISSING -eq 0 ]; then
     echo "==> Downloads OK but some APKs missing."

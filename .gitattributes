@@ -1,1 +1,2 @@
+apks/*.apk filter=lfs diff=lfs merge=lfs -text
 apks/*.xapk filter=lfs diff=lfs merge=lfs -text
